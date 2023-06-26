@@ -3,12 +3,18 @@ package redisdb
 import (
 	"context"
 	"strconv"
+	"sync"
 
 	"github.com/go-redis/cache/v8"
 	"github.com/go-redis/redis/v8"
 )
 
-var redisCache cache.Cache
+var redisCache botCache
+
+type botCache struct {
+	rc cache.Cache
+	mu sync.Mutex
+}
 
 func RedisConnect(address, port string) {
 	redisRing := *redis.NewRing(&redis.RingOptions{
@@ -17,13 +23,16 @@ func RedisConnect(address, port string) {
 		},
 	})
 
-	redisCache = *cache.New(&cache.Options{
+	redisCache.rc = *cache.New(&cache.Options{
 		Redis: redisRing,
 	})
 }
 
 func SetLanguage(chatID int64, language string) error {
-	err := redisCache.Set(&cache.Item{
+	redisCache.mu.Lock()
+	defer redisCache.mu.Unlock()
+
+	err := redisCache.rc.Set(&cache.Item{
 		Key:   strconv.FormatInt(chatID, 10),
 		Value: language,
 	})
@@ -32,8 +41,11 @@ func SetLanguage(chatID int64, language string) error {
 }
 
 func GetLanguage(chatID int64) (string, error) {
+	redisCache.mu.Lock()
+	defer redisCache.mu.Unlock()
+
 	var wanted string
-	err := redisCache.Get(context.TODO(), strconv.FormatInt(chatID, 10), &wanted)
+	err := redisCache.rc.Get(context.TODO(), strconv.FormatInt(chatID, 10), &wanted)
 
 	if err != nil {
 		return "", err

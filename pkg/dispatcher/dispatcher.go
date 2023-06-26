@@ -2,6 +2,7 @@ package dispatcher
 
 import (
 	handlers "news_telegram_bot/pkg/handlers"
+	"news_telegram_bot/pkg/state"
 	"sync"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -9,6 +10,7 @@ import (
 )
 
 type Dispatcher struct {
+	state                     state.BotState
 	MessageHandlersList       []handlers.MessageHandler
 	EditedMessageHandlersList []handlers.MessageHandler
 	CallbackQueryHandlersList []handlers.CallbackQueryHandler
@@ -36,24 +38,24 @@ func (d *Dispatcher) WaitUpdates(bot *tgbotapi.BotAPI, dispatcherChannel chan tg
 		if update.Message != nil {
 			logrus.Debugf("Update[%v] is a message", update.UpdateID)
 			for _, handler := range d.MessageHandlersList {
-				if handler.Check(update.Message) {
-					handler.CallbackFunc(update.Message, bot)
+				if handler.Check(update.Message, &d.state) {
+					handler.CallbackFunc(update.Message, bot, &d.state)
 					break
 				}
 			}
 		} else if update.EditedMessage != nil {
 			logrus.Debugf("Update[%v] is a edited message", update.UpdateID)
 			for _, handler := range d.EditedMessageHandlersList {
-				if handler.Check(update.Message) {
-					handler.CallbackFunc(update.Message, bot)
+				if handler.Check(update.Message, &d.state) {
+					handler.CallbackFunc(update.Message, bot, &d.state)
 					break
 				}
 			}
 		} else if update.CallbackQuery != nil {
 			logrus.Debugf("Update[%v] is a callback query", update.UpdateID)
 			for _, handler := range d.CallbackQueryHandlersList {
-				if handler.Check(update.CallbackQuery) {
-					handler.CallbackFunc(update.CallbackQuery, bot)
+				if handler.Check(update.CallbackQuery, &d.state) {
+					handler.CallbackFunc(update.CallbackQuery, bot, &d.state)
 					break
 				}
 			}
@@ -64,8 +66,8 @@ func (d *Dispatcher) WaitUpdates(bot *tgbotapi.BotAPI, dispatcherChannel chan tg
 }
 
 func (d *Dispatcher) RegisterMessageHandler(
-	callbackFunc func(*tgbotapi.Message, *tgbotapi.BotAPI),
-	filters ...func(*tgbotapi.Message) bool,
+	callbackFunc func(*tgbotapi.Message, *tgbotapi.BotAPI, *state.BotState),
+	filters ...func(*tgbotapi.Message, *state.BotState) bool,
 ) {
 
 	d.MessageHandlersList = append(
@@ -79,8 +81,8 @@ func (d *Dispatcher) RegisterMessageHandler(
 }
 
 func (d *Dispatcher) RegisterEditedMessageHandler(
-	callbackFunc func(*tgbotapi.Message, *tgbotapi.BotAPI),
-	filters ...func(*tgbotapi.Message) bool,
+	callbackFunc func(*tgbotapi.Message, *tgbotapi.BotAPI, *state.BotState),
+	filters ...func(*tgbotapi.Message, *state.BotState) bool,
 ) {
 
 	d.EditedMessageHandlersList = append(
@@ -94,8 +96,8 @@ func (d *Dispatcher) RegisterEditedMessageHandler(
 }
 
 func (d *Dispatcher) RegisterCallbackQueryHandler(
-	callbackFunc func(*tgbotapi.CallbackQuery, *tgbotapi.BotAPI),
-	Filters ...func(*tgbotapi.CallbackQuery) bool,
+	callbackFunc func(*tgbotapi.CallbackQuery, *tgbotapi.BotAPI, *state.BotState),
+	Filters ...func(*tgbotapi.CallbackQuery, *state.BotState) bool,
 ) {
 
 	d.CallbackQueryHandlersList = append(
@@ -110,6 +112,7 @@ func (d *Dispatcher) RegisterCallbackQueryHandler(
 
 func NewDispatcher() Dispatcher {
 	return Dispatcher{
+		state:                     *state.NewBotState(),
 		MessageHandlersList:       make([]handlers.MessageHandler, 0, 1),
 		EditedMessageHandlersList: make([]handlers.MessageHandler, 0, 1),
 		CallbackQueryHandlersList: make([]handlers.CallbackQueryHandler, 0, 1),
