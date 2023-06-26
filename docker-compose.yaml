@@ -1,0 +1,29 @@
+version: '3.8'
+
+
+services:
+  # app:
+  #   build: ./docker/go/
+  #
+  #   command: ./tmp/bin/tgbot
+  #
+  tgbot-redis:
+    image: redis:7-alpine
+    restart: on-failure
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - 6379:6379
+    volumes:
+      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+
+  tgbot-mariadb:
+    image: mariadb:latest
+    ports:
+      - 3306:3306
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD} 
+    volumes:
+      - ./docker/mariadb:/var/lib/mysql
