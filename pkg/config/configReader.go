@@ -8,9 +8,15 @@ import (
 )
 
 type Config struct {
-	TGbotToken string
-	LogLevel   logrus.Level
-	LogPath    string
+	TGbotToken          string
+	LogLevel            logrus.Level
+	LogPath             string
+	RedisAddress        string
+	RedisPort           string
+	MariaDBRootPassword string
+	MariaDBDatabase     string
+	MariaDBUser         string
+	MariaDBPassword     string
 }
 
 func ReadConfig() Config {
@@ -33,8 +39,14 @@ func ReadConfig() Config {
 	}
 
 	return Config{
-		TGbotToken: os.Getenv("TELEGRAM_BOT_TOKEN"),
-		LogLevel:   logLevels[level],
-		LogPath:    os.Getenv("PATH_TO_LOG_FILE"),
+		TGbotToken:          os.Getenv("TELEGRAM_BOT_TOKEN"),
+		LogLevel:            logLevels[level],
+		LogPath:             os.Getenv("PATH_TO_LOG_FILE"),
+		RedisAddress:        os.Getenv("REDIS_ADDRESS"),
+		RedisPort:           os.Getenv("REDIS_PORT"),
+		MariaDBRootPassword: os.Getenv("MARIADB_ROOT_PASSWORD"),
+		MariaDBDatabase:     os.Getenv("MARIADB_DATABASE"),
+		MariaDBUser:         os.Getenv("MARIADB_USER"),
+		MariaDBPassword:     os.Getenv("MARIADB_PASSWORD"),
 	}
 }

@@ -12,5 +12,5 @@ func RegisterAllHandlers(dp *dispatcher.Dispatcher) {
 	// Edited message handlers
 
 	// Callback query handlers
-	dp.RegisterCallbackQueryHandler(handleLanguage, filters.CallbackDataFilter("en-US", "uk-UA"))
+	dp.RegisterCallbackQueryHandler(receiveLanguage, filters.CallbackDataFilter("en-US", "uk-UA"))
 }
