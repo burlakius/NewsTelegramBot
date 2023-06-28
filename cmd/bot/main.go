@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"news_telegram_bot/pkg/config"
-	"news_telegram_bot/pkg/databases/redis"
+	"news_telegram_bot/internal/config"
+	"news_telegram_bot/internal/databases/redis"
 	"news_telegram_bot/pkg/logging"
 	"news_telegram_bot/pkg/router"
 	"os"
