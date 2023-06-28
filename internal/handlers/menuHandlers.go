@@ -1,9 +1,6 @@
 package handlers
 
 import (
-	// redisdb "news_telegram_bot/pkg/databases/redis"
-	// "news_telegram_bot/pkg/state"
-
 	"fmt"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"

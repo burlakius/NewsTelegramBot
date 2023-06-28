@@ -15,18 +15,16 @@ import (
 	_ "news_telegram_bot/internal/translations"
 )
 
-var CONFIG config.Config
-
 func init() {
-	CONFIG = config.ReadConfig()
+	config.LoadConfig()
 
-	redisdb.RedisConnect(CONFIG.RedisAddress, CONFIG.RedisPort)
+	redisdb.RedisConnect(config.RedisAddress, config.RedisPort)
 
-	logging.LoggerSetup(CONFIG.LogPath, CONFIG.LogLevel)
+	logging.LoggerSetup(config.LogPath, config.LogLevel)
 }
 
 func main() {
-	bot, err := tgbotapi.NewBotAPI(CONFIG.TGbotToken)
+	bot, err := tgbotapi.NewBotAPI(config.TGbotToken)
 	if err != nil {
 		logrus.Fatal("BOT ERROR: ", err)
 	}

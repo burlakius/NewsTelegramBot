@@ -7,7 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Config struct {
+var (
 	TGbotToken          string
 	LogLevel            logrus.Level
 	LogPath             string
@@ -17,10 +17,10 @@ type Config struct {
 	MariaDBDatabase     string
 	MariaDBUser         string
 	MariaDBPassword     string
-}
+)
 
-func ReadConfig() Config {
-	err := godotenv.Load(".env")
+func LoadConfig() {
+	err := godotenv.Load()
 	if err != nil {
 		logrus.Fatalln("Loading .env file error")
 	}
@@ -38,15 +38,13 @@ func ReadConfig() Config {
 		level = "debug"
 	}
 
-	return Config{
-		TGbotToken:          os.Getenv("TELEGRAM_BOT_TOKEN"),
-		LogLevel:            logLevels[level],
-		LogPath:             os.Getenv("PATH_TO_LOG_FILE"),
-		RedisAddress:        os.Getenv("REDIS_ADDRESS"),
-		RedisPort:           os.Getenv("REDIS_PORT"),
-		MariaDBRootPassword: os.Getenv("MARIADB_ROOT_PASSWORD"),
-		MariaDBDatabase:     os.Getenv("MARIADB_DATABASE"),
-		MariaDBUser:         os.Getenv("MARIADB_USER"),
-		MariaDBPassword:     os.Getenv("MARIADB_PASSWORD"),
-	}
+	TGbotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
+	LogLevel = logLevels[level]
+	LogPath = os.Getenv("PATH_TO_LOG_FILE")
+	RedisAddress = os.Getenv("REDIS_ADDRESS")
+	RedisPort = os.Getenv("REDIS_PORT")
+	MariaDBRootPassword = os.Getenv("MARIADB_ROOT_PASSWORD")
+	MariaDBDatabase = os.Getenv("MARIADB_DATABASE")
+	MariaDBUser = os.Getenv("MARIADB_USER")
+	MariaDBPassword = os.Getenv("MARIADB_PASSWORD")
 }
