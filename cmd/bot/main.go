@@ -12,6 +12,7 @@ import (
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
+	_ "news_telegram_bot/internal/translations"
 )
 
 var CONFIG config.Config
