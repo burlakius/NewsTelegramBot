@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"fmt"
-
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -10,9 +8,22 @@ import (
 
 func setMenu(chatID int64, lang string, bot *tgbotapi.BotAPI) {
 	languageTag := language.MustParse(lang)
-	fmt.Println(lang, languageTag)
 	printer := message.NewPrinter(languageTag)
 
-	messageText := printer.Sprintf("Меню")
-	bot.Send(tgbotapi.NewMessage(chatID, messageText))
+	userKeyboard := tgbotapi.NewReplyKeyboard(
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(printer.Sprintf("Новини 📰")),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(printer.Sprintf("Задати питання ❓")),
+		),
+		tgbotapi.NewKeyboardButtonRow(
+			tgbotapi.NewKeyboardButton(printer.Sprintf("Мої налаштування ⚙️")),
+		),
+	)
+
+	responceMessage := tgbotapi.NewMessage(chatID, printer.Sprintf("Меню налаштоване 📱"))
+	responceMessage.ReplyMarkup = userKeyboard
+
+	bot.Send(responceMessage)
 }

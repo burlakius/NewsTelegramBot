@@ -7,6 +7,9 @@ build:
 docker-run:
 	sudo docker-compose up
 
+redis-cli:
+	sudo docker exec -it news_telegram_bot-tgbot-redis-1 redis-cli
+
 extract-text:
 	go generate ./internal/translations/translations.go
 
