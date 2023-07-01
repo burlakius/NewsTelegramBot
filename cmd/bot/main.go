@@ -3,30 +3,31 @@ package main
 import (
 	"context"
 	"news_telegram_bot/internal/config"
-	"news_telegram_bot/internal/databases/redis"
+	redisdb "news_telegram_bot/pkg/databases/redis"
 	"news_telegram_bot/pkg/logging"
 	"news_telegram_bot/pkg/router"
 	"os"
 	"os/signal"
 	"syscall"
 
+	_ "news_telegram_bot/internal/translations"
+
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
-	_ "news_telegram_bot/internal/translations"
 )
 
 func init() {
 	config.LoadConfig()
 
-	redisdb.RedisConnect(config.RedisAddress, config.RedisPort)
-
 	logging.LoggerSetup(config.LogPath, config.LogLevel)
+
+	redisdb.RedisConnect(config.RedisLanguageSessionsHost, config.RedisChatStatesHost)
 }
 
 func main() {
 	bot, err := tgbotapi.NewBotAPI(config.TGbotToken)
 	if err != nil {
-		logrus.Fatal("BOT ERROR: ", err)
+		logrus.Fatal(err)
 	}
 
 	logrus.Infof("Authorized on account %s", bot.Self.UserName)

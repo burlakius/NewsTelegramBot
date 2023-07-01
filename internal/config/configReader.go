@@ -8,15 +8,17 @@ import (
 )
 
 var (
-	TGbotToken          string
-	LogLevel            logrus.Level
-	LogPath             string
-	RedisAddress        string
-	RedisPort           string
-	MariaDBRootPassword string
-	MariaDBDatabase     string
-	MariaDBUser         string
-	MariaDBPassword     string
+	TGbotToken                string
+	AdminPassword             string
+	LogLevel                  logrus.Level
+	LogPath                   string
+	RedisLanguageSessionsHost string
+	RedisChatStatesHost       string
+	MariaDBHost               string
+	MariaDBRootPassword       string
+	MariaDBDatabase           string
+	MariaDBUser               string
+	MariaDBPassword           string
 )
 
 func LoadConfig() {
@@ -39,10 +41,12 @@ func LoadConfig() {
 	}
 
 	TGbotToken = os.Getenv("TELEGRAM_BOT_TOKEN")
+	AdminPassword = os.Getenv("ADMIN_PASSWORD")
 	LogLevel = logLevels[level]
 	LogPath = os.Getenv("PATH_TO_LOG_FILE")
-	RedisAddress = os.Getenv("REDIS_ADDRESS")
-	RedisPort = os.Getenv("REDIS_PORT")
+	RedisLanguageSessionsHost = os.Getenv("REDIS_LANGUAGE_SESSIONS_HOST")
+	RedisChatStatesHost = os.Getenv("REDIS_CHAT_STATES_HOST")
+	MariaDBHost = os.Getenv("MARIADB_HOST")
 	MariaDBRootPassword = os.Getenv("MARIADB_ROOT_PASSWORD")
 	MariaDBDatabase = os.Getenv("MARIADB_DATABASE")
 	MariaDBUser = os.Getenv("MARIADB_USER")

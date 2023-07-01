@@ -7,14 +7,23 @@ services:
   #
   #   command: ./tmp/bin/tgbot
   #
-  tgbot-redis:
+  redis-language-sessions:
     image: redis:7-alpine
     restart: on-failure
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
       - 6379:6379
     volumes:
-      - ./docker/redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./docker/redis/redis_lang_sessions.conf:/usr/local/etc/redis/redis.conf
+
+  redis-chat-states:
+    image: redis:7-alpine
+    restart: on-failure
+    command: redis-server /usr/local/etc/redis/redis.conf
+    ports:
+      - 6378:6379
+    volumes:
+      - ./docker/redis/redis_chat_states.conf:/usr/local/etc/redis/redis.conf
 
   tgbot-mariadb:
     image: mariadb:latest

@@ -4,3 +4,4 @@ docker/mariadb
 internal/translations/locales/en-US/*
 internal/translations/locales/uk-UA/*
 internal/translations/catalog.go
+languages.json

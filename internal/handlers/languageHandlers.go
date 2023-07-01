@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	redisdb "news_telegram_bot/internal/databases/redis"
-	"news_telegram_bot/pkg/state"
+	redisdb "news_telegram_bot/pkg/databases/redis"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI, botState *state.BotState) {
+func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
 	defer bot.Send(tgbotapi.NewDeleteMessage(callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID))
 
 	language := callbackQuery.Data
@@ -20,7 +19,6 @@ func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 	message := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, "")
 	if err == nil {
 		message.Text = responceTest[language]
-		defer setMenu(callbackQuery.Message.Chat.ID, language, bot)
 	} else {
 		message.Text = "Oops, an error occurred, try again!\n\nОй, сталася помилка, спробуй ще!"
 		defer sendLanguageSwitcher(callbackQuery.Message.Chat.ID, bot)
