@@ -17,7 +17,19 @@ func GetPrinter(lang string) *message.Printer {
 	return message.NewPrinter(languageTags[lang])
 }
 
+func GetAllTranslations(text string) []string {
+	result := make([]string, 0, len(languageTags))
+	for _, languageTag := range languageTags {
+		printer := message.NewPrinter(languageTag)
+		result = append(result, printer.Sprintf(text))
+	}
+
+	return result
+}
+
 func SetupTranslations() {
+	languageTags = make(map[string]language.Tag)
+
 	languagesFile, err := os.OpenFile("languages.json", os.O_RDONLY, 444)
 	if err != nil {
 		logrus.Fatal(err)

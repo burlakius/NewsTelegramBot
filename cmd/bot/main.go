@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"news_telegram_bot/internal/config"
+	"news_telegram_bot/pkg/databases/mariadb"
 	redisdb "news_telegram_bot/pkg/databases/redis"
 	"news_telegram_bot/pkg/logging"
 	"news_telegram_bot/pkg/router"
@@ -11,6 +12,7 @@ import (
 	"syscall"
 
 	_ "news_telegram_bot/internal/translations"
+	"news_telegram_bot/pkg/translator"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 	"github.com/sirupsen/logrus"
@@ -21,10 +23,14 @@ func init() {
 
 	logging.LoggerSetup(config.LogPath, config.LogLevel)
 
+	mariadb.MariadbConnect(config.MariaDBUser, config.MariaDBPassword, config.MariaDBHost, config.MariaDBDatabase)
 	redisdb.RedisConnect(config.RedisLanguageSessionsHost, config.RedisChatStatesHost)
+
+	translator.SetupTranslations()
 }
 
 func main() {
+	defer mariadb.MariadbClose()
 	bot, err := tgbotapi.NewBotAPI(config.TGbotToken)
 	if err != nil {
 		logrus.Fatal(err)

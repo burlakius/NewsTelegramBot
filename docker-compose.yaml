@@ -35,4 +35,5 @@ services:
       MARIADB_USER: ${MARIADB_USER}
       MARIADB_PASSWORD: ${MARIADB_PASSWORD} 
     volumes:
-      - ./docker/mariadb:/var/lib/mysql
+      - ./docker/mariadb/db:/var/lib/mysql
+      - ./docker/mariadb/init-scripts:/docker-entrypoint-initdb.d

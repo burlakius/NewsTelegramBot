@@ -10,7 +10,6 @@ func startHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	chatLocale, err := redisdb.GetLanguage(message.Chat.ID)
 	if err != nil {
 		sendLanguageSwitcher(message.Chat.ID, bot)
-		startHandler(message, bot)
 		return
 	}
 

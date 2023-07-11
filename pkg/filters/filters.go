@@ -1,8 +1,7 @@
 package filters
 
 import (
-	"strings"
-
+	"news_telegram_bot/pkg/databases/mariadb"
 	redisdb "news_telegram_bot/pkg/databases/redis"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -11,7 +10,10 @@ import (
 func CommandFilter(commands ...string) func(*tgbotapi.Message) bool {
 	return func(message *tgbotapi.Message) bool {
 		for _, command := range commands {
-			if strings.TrimSpace(message.Text) == "/"+command {
+			// if strings.TrimSpace(message.Text) == "/"+command {
+			// 	return true
+			// }
+			if message.Command() == command {
 				return true
 			}
 		}
@@ -51,6 +53,19 @@ func StateFilter(states ...string) func(*tgbotapi.Message) bool {
 		}
 		for _, s := range states {
 			if chatState == s {
+				return true
+			}
+		}
+
+		return false
+	}
+}
+
+func AdminChatFilter() func(*tgbotapi.Message) bool {
+	return func(message *tgbotapi.Message) bool {
+		chats := mariadb.GetAdminsChats()
+		for _, id := range chats {
+			if message.Chat.ID == id {
 				return true
 			}
 		}

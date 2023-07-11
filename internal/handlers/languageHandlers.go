@@ -25,6 +25,7 @@ func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 
 	}
 	bot.Send(message)
+	startHandler(callbackQuery.Message, bot)
 }
 
 func sendLanguageSwitcher(chatID int64, bot *tgbotapi.BotAPI) {
