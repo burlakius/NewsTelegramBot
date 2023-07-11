@@ -10,11 +10,11 @@ import (
 func cancel(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
 	redisdb.DoneChatState(callbackQuery.Message.Chat.ID)
 
-	lang, err := redisdb.GetLanguage(callbackQuery.Message.Chat.ID)
+	printer, err := translator.GetPrinterByChatID(callbackQuery.Message.Chat.ID)
 	if err != nil {
-		return // TODO!!!!!!!
+		sendLanguageError(callbackQuery.Message.Chat.ID, bot)
+		return
 	}
-	printer := translator.GetPrinter(lang)
 
 	responceMessage := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, printer.Sprintf("Дію скасовано..."))
 	bot.Send(responceMessage)

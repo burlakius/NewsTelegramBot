@@ -2,11 +2,10 @@ package handlers
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"news_telegram_bot/pkg/translator"
+	"golang.org/x/text/message"
 )
 
-func setMenu(chatID int64, lang string, bot *tgbotapi.BotAPI) {
-	printer := translator.GetPrinter(lang)
+func setMenu(chatID int64, printer *message.Printer, bot *tgbotapi.BotAPI) {
 
 	userKeyboard := tgbotapi.NewReplyKeyboard(
 		tgbotapi.NewKeyboardButtonRow(

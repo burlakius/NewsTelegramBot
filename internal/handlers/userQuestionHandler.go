@@ -11,14 +11,15 @@ import (
 func userQuestionHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	err := redisdb.SetChatState(message.Chat.ID, "WaitQuestion")
 	if err != nil {
-		return //TODO!!!!!
+		sendBotStorageError(message.Chat.ID, bot)
+		return
 	}
 
-	lang, err := redisdb.GetLanguage(message.Chat.ID)
+	printer, err := translator.GetPrinterByChatID(message.Chat.ID)
 	if err != nil {
-		return //TODO!!!!!
+		sendLanguageError(message.Chat.ID, bot)
+		return
 	}
-	printer := translator.GetPrinter(lang)
 
 	responceMessage := tgbotapi.NewMessage(message.Chat.ID, printer.Sprintf("Очікую на ваше питання\n\nУВАГА! Всі наступні повідомлення будуть враховуватись, як питання і будуть надісланні адміністраторам"))
 	responceMessage.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
@@ -36,14 +37,16 @@ func userQuestionHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 func receiveQuetionMessage(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	err := mariadb.SetQuestion(message.Chat.ID, message.MessageID)
 	if err != nil {
-		panic(err) // TODO!!!!!!!
+		sendBotStorageError(message.Chat.ID, bot)
+		return
 	}
 
-	lang, err := redisdb.GetLanguage(message.Chat.ID)
+	printer, err := translator.GetPrinterByChatID(message.Chat.ID)
 	if err != nil {
-		return //TODO!!!!!
+		sendLanguageError(message.Chat.ID, bot)
+		return
 	}
-	printer := translator.GetPrinter(lang)
+
 	responceMessage := tgbotapi.NewMessage(message.Chat.ID, printer.Sprintf("Питання збережено..."))
 	responceMessage.ReplyToMessageID = message.MessageID
 	responceMessage.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
@@ -59,11 +62,11 @@ func receiveQuetionMessage(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 }
 
 func sendUserQuestions(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
-	lang, err := redisdb.GetLanguage(callbackQuery.Message.Chat.ID)
+	printer, err := translator.GetPrinterByChatID(callbackQuery.Message.Chat.ID)
 	if err != nil {
-		return //TODO!!!!!
+		sendLanguageError(callbackQuery.Message.Chat.ID, bot)
+		return
 	}
-	printer := translator.GetPrinter(lang)
 
 	redisdb.DoneChatState(callbackQuery.Message.Chat.ID)
 
@@ -86,21 +89,17 @@ func sendUserQuestions(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotA
 }
 
 func deleteUserQuestion(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
-	err := redisdb.DoneChatState(callbackQuery.Message.Chat.ID)
+	err := mariadb.DeleteQuestionMessage(callbackQuery.Message.Chat.ID, callbackQuery.Message.ReplyToMessage.MessageID)
 	if err != nil {
-		panic(err) // TODO!!!!!!!!!!!
+		sendBotStorageError(callbackQuery.Message.Chat.ID, bot)
+		return
 	}
 
-	err = mariadb.DeleteQuestionMessage(callbackQuery.Message.Chat.ID, callbackQuery.Message.ReplyToMessage.MessageID)
+	printer, err := translator.GetPrinterByChatID(callbackQuery.Message.Chat.ID)
 	if err != nil {
-		panic(err) //TODO!!!!!!!!!!
+		sendLanguageError(callbackQuery.Message.Chat.ID, bot)
+		return
 	}
-
-	lang, err := redisdb.GetLanguage(callbackQuery.Message.Chat.ID)
-	if err != nil {
-		return //TODO!!!!!
-	}
-	printer := translator.GetPrinter(lang)
 
 	responceMessage := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, printer.Sprintf("Повідомлення видалено..."))
 	responceMessage.ReplyToMessageID = callbackQuery.Message.ReplyToMessage.MessageID

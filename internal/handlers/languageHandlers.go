@@ -44,7 +44,5 @@ func sendLanguageSwitcher(chatID int64, bot *tgbotapi.BotAPI) {
 
 	message.ReplyMarkup = languageKeyboard
 
-	if _, err := bot.Send(message); err != nil {
-		panic(err)
-	}
+	bot.Send(message)
 }

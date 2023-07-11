@@ -6,6 +6,8 @@ import (
 	"os"
 	"strings"
 
+	redisdb "news_telegram_bot/pkg/databases/redis"
+
 	"github.com/sirupsen/logrus"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
@@ -15,6 +17,15 @@ var languageTags map[string]language.Tag
 
 func GetPrinter(lang string) *message.Printer {
 	return message.NewPrinter(languageTags[lang])
+}
+
+func GetPrinterByChatID(chatID int64) (*message.Printer, error) {
+	lang, err := redisdb.GetLanguage(chatID)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetPrinter(lang), nil
 }
 
 func GetAllTranslations(text string) []string {
