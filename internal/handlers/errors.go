@@ -13,7 +13,7 @@ func sendError(chatID int64, bot *tgbotapi.BotAPI, errorText string) {
 func sendLanguageError(chatID int64, bot *tgbotapi.BotAPI) {
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
-		"Помилка!\n\nВибачте, але я не можу зрозуміти, на якій мові відповідати вам. Для вирішення цієї проблеми, будь ласка, спробуйте налаштувати мову, використовуючи команду /language. Якщо це не спрацювало, спробуйте ще раз, або зв'яжіться з адміністраторами для отримання допомоги за допомогою команди /contacts.\n\n\n"+
+		"Помилка!\n\nВибачте, але я не можу зрозуміти, якою мовою відповідати вам. Для вирішення цієї проблеми, будь ласка, спробуйте налаштувати мову, використовуючи команду /language. Якщо це не спрацювало, спробуйте ще раз, або зв'яжіться з адміністраторами для отримання допомоги за допомогою команди /contacts.\n\n\n"+
 			"Error!\n\nI'm sorry, but I can't determine the language to respond to you. To resolve this issue, please try setting your language using the command /language. If that didn't work, please try again later, or contact the administrators for assistance using the command /contacts.",
 	)
 	bot.Send(errorMessage)

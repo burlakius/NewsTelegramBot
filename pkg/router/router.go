@@ -75,8 +75,8 @@ func (r *router) InitDispatchers(goroutinesNum int) {
 	r.waitDispatchersClosing = &wg
 }
 
-func NewRouter(bot *tgbotapi.BotAPI, updateConfig tgbotapi.UpdateConfig) router {
-	return router{
+func NewRouter(bot *tgbotapi.BotAPI, updateConfig tgbotapi.UpdateConfig) *router {
+	return &router{
 		bot:          bot,
 		updateConfig: updateConfig,
 	}

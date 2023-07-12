@@ -10,6 +10,12 @@ import (
 func cancel(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
 	redisdb.DoneChatState(callbackQuery.Message.Chat.ID)
 
+	deleteMessage := tgbotapi.NewDeleteMessage(
+		callbackQuery.Message.Chat.ID,
+		callbackQuery.Message.MessageID,
+	)
+	bot.Send(deleteMessage)
+
 	printer, err := translator.GetPrinterByChatID(callbackQuery.Message.Chat.ID)
 	if err != nil {
 		sendLanguageError(callbackQuery.Message.Chat.ID, bot)

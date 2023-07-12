@@ -195,7 +195,7 @@ func deleteAnswerMessage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.Bo
 
 	err = mariadb.DeleteAnswerMessage(
 		callbackQuery.Message.Chat.ID,
-		callbackQuery.Message.MessageID,
+		callbackQuery.Message.ReplyToMessage.MessageID,
 	)
 	if err != nil {
 		sendBotStorageError(callbackQuery.Message.Chat.ID, bot)

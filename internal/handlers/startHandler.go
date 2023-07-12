@@ -9,7 +9,7 @@ import (
 func startHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	printer, err := translator.GetPrinterByChatID(message.Chat.ID)
 	if err != nil {
-		sendLanguageSwitcher(message.Chat.ID, bot)
+		sendLanguageSwitcher(message, bot)
 		return
 	}
 

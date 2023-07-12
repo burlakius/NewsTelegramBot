@@ -70,7 +70,7 @@ func sendUserQuestions(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotA
 
 	redisdb.DoneChatState(callbackQuery.Message.Chat.ID)
 
-	responceMessage := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, printer.Sprintf("Питання надіслані\n\nЧекайте, на відповідь"))
+	responceMessage := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, printer.Sprintf("Питання надіслані\n\nЧекайте, на відповідь!"))
 	bot.Send(responceMessage)
 
 	editedMessageMarkup := tgbotapi.NewEditMessageReplyMarkup(
@@ -101,8 +101,15 @@ func deleteUserQuestion(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.Bot
 		return
 	}
 
-	responceMessage := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, printer.Sprintf("Повідомлення видалено..."))
-	responceMessage.ReplyToMessageID = callbackQuery.Message.ReplyToMessage.MessageID
+	editedMessage := tgbotapi.NewEditMessageReplyMarkup(
+		callbackQuery.Message.Chat.ID,
+		callbackQuery.Message.MessageID,
+		tgbotapi.NewInlineKeyboardMarkup(
+			tgbotapi.NewInlineKeyboardRow(
+				tgbotapi.NewInlineKeyboardButtonData(printer.Sprintf("Видалено..."), "_"),
+			),
+		),
+	)
 
-	bot.Send(responceMessage)
+	bot.Send(editedMessage)
 }
