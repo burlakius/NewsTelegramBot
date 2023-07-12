@@ -1,5 +1,6 @@
 package mariadb
 
+// Returns admin chats ID slice from database
 func getAdminsChatsFromDB() []int64 {
 	rows, err := botStorage.mainDB.Query("SELECT chat_id FROM chat_admins")
 	if err != nil {
@@ -21,10 +22,12 @@ func getAdminsChatsFromDB() []int64 {
 	return result
 }
 
+// Returns admin chats ID from bot storage
 func GetAdminsChats() []int64 {
 	return botStorage.adminsChats
 }
 
+// Insert new chatID in database and bot storage
 func SetAdminChat(chat_id int64) error {
 	botStorage.mu.Lock()
 	defer botStorage.mu.Unlock()
@@ -44,6 +47,7 @@ func SetAdminChat(chat_id int64) error {
 	return nil
 }
 
+// Check to see if there is a chat in bot storage
 func IsAdminChat(chatID int64) bool {
 	for _, chat := range botStorage.adminsChats {
 		if chatID == chat {
@@ -54,6 +58,7 @@ func IsAdminChat(chatID int64) bool {
 	return false
 }
 
+// Returns first question(chatID, messageID) from database
 func GetQuestion() (int64, int, error) {
 	var (
 		chatID    int64
@@ -69,42 +74,22 @@ func GetQuestion() (int64, int, error) {
 	return chatID, messageID, nil
 }
 
-func SetQuestion(question_chat_id int64, question_message_id int) error {
-	botStorage.mu.Lock()
-	defer botStorage.mu.Unlock()
-	stmt, err := botStorage.mainDB.Prepare("INSERT INTO user_questions (question_chat_id, question_message_id) VALUES (?, ?)")
-	if err != nil {
-		return err
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(question_chat_id, question_message_id)
-	if err != nil {
-		panic(err)
-	}
-
-	return nil
-}
-
+// Delete answer message from database
 func DeleteAnswerMessage(chatID int64, messageID int) error {
 	_, err := botStorage.mainDB.Exec("DELETE FROM admin_answers WHERE answer_chat_id = ? and answer_message_id = ?", chatID, messageID)
 
 	return err
 }
 
-func DeleteQuestionMessage(chatID int64, messageID int) error {
-	_, err := botStorage.mainDB.Exec("DELETE FROM user_questions WHERE question_chat_id = ? and question_message_id = ?", chatID, messageID)
-
-	return err
-}
-
+// Delete first question message from database
 func DeleteQuestionFirstMessage() error {
 	_, err := botStorage.mainDB.Exec("DELETE FROM user_questions LIMIT 1")
 
 	return err
 }
 
-func SetAnswerToQuestion(answer_chat_id int64, answer_message_id int) error {
+// Insert answer message in database
+func InsertAnswerMessage(answer_chat_id int64, answer_message_id int) error {
 	botStorage.mu.Lock()
 	defer botStorage.mu.Unlock()
 	stmt, err := botStorage.mainDB.Prepare("INSERT INTO admin_answers (answer_chat_id, answer_message_id) VALUES (?, ?)")
@@ -121,6 +106,7 @@ func SetAnswerToQuestion(answer_chat_id int64, answer_message_id int) error {
 	return nil
 }
 
+// Returns all answer messages(chatID, messageID)
 func GetAllAnswerMessages() (map[int64]int, error) {
 	result := make(map[int64]int)
 
@@ -150,6 +136,7 @@ func GetAllAnswerMessages() (map[int64]int, error) {
 	return result, nil
 }
 
+// Delete all answer messages from database
 func DeleteAllAnswerMessages() error {
 	_, err := botStorage.mainDB.Exec("DELETE FROM admin_answers")
 

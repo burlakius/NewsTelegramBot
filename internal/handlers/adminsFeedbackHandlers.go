@@ -164,7 +164,7 @@ func changeQuestionMessageMenu(message *tgbotapi.Message, printer *message.Print
 }
 
 func receiveReplyMessage(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
-	err := mariadb.SetAnswerToQuestion(message.Chat.ID, message.MessageID)
+	err := mariadb.InsertAnswerMessage(message.Chat.ID, message.MessageID)
 	if err != nil {
 		sendBotStorageError(message.Chat.ID, bot)
 		return
