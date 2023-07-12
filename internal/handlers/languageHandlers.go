@@ -21,14 +21,14 @@ func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 		message.Text = responceTest[language]
 	} else {
 		message.Text = "Oops, an error occurred, try again!\n\nОй, сталася помилка, спробуй ще!"
-		defer sendLanguageSwitcher(callbackQuery.Message.Chat.ID, bot)
+		defer sendLanguageSwitcher(callbackQuery.Message, bot)
 
 	}
 	bot.Send(message)
 	startHandler(callbackQuery.Message, bot)
 }
 
-func sendLanguageSwitcher(chatID int64, bot *tgbotapi.BotAPI) {
+func sendLanguageSwitcher(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	languageKeyboard := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData("🇺🇦", "uk-UA"),
@@ -36,13 +36,13 @@ func sendLanguageSwitcher(chatID int64, bot *tgbotapi.BotAPI) {
 		),
 	)
 
-	message := tgbotapi.NewMessage(
-		chatID,
+	responceMessage := tgbotapi.NewMessage(
+		message.Chat.ID,
 		"🇺🇸Please select your preferred language\n"+
 			"🇺🇦Будь ласка, оберіть бажану мову",
 	)
 
-	message.ReplyMarkup = languageKeyboard
+	responceMessage.ReplyMarkup = languageKeyboard
 
-	bot.Send(message)
+	bot.Send(responceMessage)
 }

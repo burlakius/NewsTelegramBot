@@ -8,6 +8,9 @@ import (
 
 func RegisterAllHandlers(dp *dispatcher.Dispatcher) {
 	// Message handlers
+	dp.RegisterMessageHandler(sendLanguageSwitcher, filters.CommandFilter("language"))
+	dp.RegisterMessageHandler(sendContacts, filters.CommandFilter("contacts"))
+
 	dp.RegisterMessageHandler(startHandler, filters.CommandFilter("start"))
 	dp.RegisterMessageHandler(receiveAdminPassword, filters.StateFilter("WaitPassword"))
 	dp.RegisterMessageHandler(helpForAdmins, filters.CommandFilter("help"), filters.AdminChatFilter())
