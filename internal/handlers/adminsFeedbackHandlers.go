@@ -67,7 +67,7 @@ func receiveAdminPassword(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	responceMessage := tgbotapi.NewMessage(message.Chat.ID, "")
 	if message.Text == config.AdminPassword {
 		responceMessage.Text = printer.Sprintf("Пароль вірний ✅\nНатисніть /help якщо вам потрібно дізнатись, як зі мною співпрацювати, або у вас не відображаються меню команд")
-		mariadb.SetAdminChat(message.Chat.ID)
+		mariadb.AddNewAdminChat(message.Chat.ID)
 		defer setAdminsCommands(message.Chat.ID, printer, bot)
 	} else {
 		responceMessage.Text = printer.Sprintf("Пароль невірний ❌")
@@ -103,7 +103,7 @@ func getQuestion(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	}
 
 	responceMessage := tgbotapi.NewMessage(message.Chat.ID, "")
-	questionChat, questionMessage, err := mariadb.GetQuestion()
+	question, err := mariadb.GetQuestion()
 	if err != nil {
 		if err == sql.ErrNoRows {
 			responceMessage.Text = printer.Sprintf("Питань немає...")
@@ -115,10 +115,18 @@ func getQuestion(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 		}
 	}
 
-	sendQuestion(message.Chat.ID, questionChat, questionMessage, printer, bot)
+	sendQuestion(
+		message.Chat.ID,
+		question,
+		printer,
+		bot,
+	)
 }
 
-func sendQuestion(chatID, questionChat int64, questionMessage int, printer *message.Printer, bot *tgbotapi.BotAPI) {
+func sendQuestion(chatID int64, question *mariadb.Question, printer *message.Printer, bot *tgbotapi.BotAPI) {
+	aboutUserMessage := tgbotapi.NewMessage(chatID, printer.Sprintf("Питання від:\n\n%s\n%s", question.FirstName+" "+question.LastName, question.Username))
+	bot.Send(aboutUserMessage)
+
 	inlineKeyboard := tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
 			tgbotapi.NewInlineKeyboardButtonData(printer.Sprintf("Відповісти ✍️"), "ReplyToQuestion"),
@@ -128,9 +136,14 @@ func sendQuestion(chatID, questionChat int64, questionMessage int, printer *mess
 		),
 	)
 
-	responceMessage := tgbotapi.NewCopyMessage(chatID, questionChat, questionMessage)
-	responceMessage.ReplyMarkup = inlineKeyboard
-	bot.Send(responceMessage)
+	questionMessage := tgbotapi.NewCopyMessage(
+		chatID,
+		question.ChatID,
+		question.MessageID,
+	)
+
+	questionMessage.ReplyMarkup = inlineKeyboard
+	bot.Send(questionMessage)
 }
 
 func replyToQuestion(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI) {
@@ -164,7 +177,7 @@ func changeQuestionMessageMenu(message *tgbotapi.Message, printer *message.Print
 }
 
 func receiveReplyMessage(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
-	err := mariadb.InsertAnswerMessage(message.Chat.ID, message.MessageID)
+	err := mariadb.SaveAnswerMessage(message.Chat.ID, message.MessageID)
 	if err != nil {
 		sendBotStorageError(message.Chat.ID, bot)
 		return
@@ -233,14 +246,18 @@ func sendAdminAnswer(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 		return
 	}
 
-	userChatID, _, err := mariadb.GetQuestion()
+	question, err := mariadb.GetQuestion()
 	if err != nil {
 		sendBotStorageError(callbackQuery.Message.Chat.ID, bot)
 		return
 	}
 
+	titleMessage := tgbotapi.NewMessage(question.ChatID, printer.Sprintf("Відповідь на питання!"))
+	titleMessage.ReplyToMessageID = question.MessageID
+	bot.Send(titleMessage)
+
 	for chatID, messageID := range answerMessages {
-		answerMessage := tgbotapi.NewCopyMessage(userChatID, chatID, messageID)
+		answerMessage := tgbotapi.NewCopyMessage(question.UserID, chatID, messageID)
 		bot.Send(answerMessage)
 
 		confirmMessage := tgbotapi.NewMessage(chatID, printer.Sprintf("Відповідь надіслана!"))

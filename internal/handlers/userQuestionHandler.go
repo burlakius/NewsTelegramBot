@@ -35,7 +35,7 @@ func userQuestionHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 }
 
 func receiveQuetionMessage(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
-	err := mariadb.SetQuestion(message.Chat.ID, message.MessageID)
+	err := mariadb.AddQuestionMessage(message.From.ID, message.Chat.ID, message.MessageID)
 	if err != nil {
 		sendBotStorageError(message.Chat.ID, bot)
 		return

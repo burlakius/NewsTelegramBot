@@ -22,8 +22,11 @@ CREATE TABLE IF NOT EXISTS news (
 
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
-  user_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT PRIMARY KEY,
   news_type_id INT DEFAULT 1,
+  first_name VARCHAR(64) NOT NULL,
+  last_name VARCHAR(64) NOT NULL,
+  username VARCHAR(32) NOT NULL,
   CONSTRAINT fk_users_news_types
     FOREIGN KEY (news_type_id)
     REFERENCES news_types(news_type_id)
@@ -33,8 +36,13 @@ CREATE TABLE IF NOT EXISTS users (
 -- User questions table
 CREATE TABLE IF NOT EXISTS user_questions (
   question_id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id BIGINT,
   question_chat_id BIGINT NOT NULL,
-  question_message_id INT NOT NULL
+  question_message_id INT NOT NULL,
+  CONSTRAINT fk_user_questions_users
+    FOREIGN KEY (user_id)
+    REFERENCES users(user_id)
+    ON DELETE CASCADE
 );
 
 -- Message table of answers to the question

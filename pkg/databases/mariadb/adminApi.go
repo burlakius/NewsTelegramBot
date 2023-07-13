@@ -27,8 +27,8 @@ func GetAdminsChats() []int64 {
 	return botStorage.adminsChats
 }
 
-// Insert new chatID in database and bot storage
-func SetAdminChat(chat_id int64) error {
+// Add new chatID in database and bot storage
+func AddNewAdminChat(chat_id int64) error {
 	botStorage.mu.Lock()
 	defer botStorage.mu.Unlock()
 	stmt, err := botStorage.mainDB.Prepare("INSERT INTO chat_admins (chat_id) VALUES (?)")
@@ -38,13 +38,10 @@ func SetAdminChat(chat_id int64) error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(chat_id)
-	if err != nil {
-		panic(err)
-	}
 
 	botStorage.adminsChats = append(botStorage.adminsChats, chat_id)
 
-	return nil
+	return err
 }
 
 // Check to see if there is a chat in bot storage
@@ -58,20 +55,23 @@ func IsAdminChat(chatID int64) bool {
 	return false
 }
 
-// Returns first question(chatID, messageID) from database
-func GetQuestion() (int64, int, error) {
-	var (
-		chatID    int64
-		messageID int
-	)
+type Question struct {
+	UserID    int64
+	FirstName string
+	LastName  string
+	Username  string
+	ChatID    int64
+	MessageID int
+}
 
-	row := botStorage.mainDB.QueryRow("SELECT question_chat_id, question_message_id FROM user_questions LIMIT 1")
-	err := row.Scan(&chatID, &messageID)
-	if err != nil {
-		return 0, 0, err
-	}
+// Returns first question as Question struct from database
+func GetQuestion() (*Question, error) {
+	var question Question
 
-	return chatID, messageID, nil
+	row := botStorage.mainDB.QueryRow("SELECT user_questions.user_id, users.first_name, users.last_name, users.username, user_questions.question_chat_id, user_questions.question_message_id FROM user_questions JOIN users ON user_questions.user_id = users.user_id")
+	err := row.Scan(&question.UserID, &question.FirstName, &question.LastName, &question.Username, &question.ChatID, &question.MessageID)
+
+	return &question, err
 }
 
 // Delete answer message from database
@@ -88,8 +88,8 @@ func DeleteQuestionFirstMessage() error {
 	return err
 }
 
-// Insert answer message in database
-func InsertAnswerMessage(answer_chat_id int64, answer_message_id int) error {
+// Add answer message in database
+func SaveAnswerMessage(answer_chat_id int64, answer_message_id int) error {
 	botStorage.mu.Lock()
 	defer botStorage.mu.Unlock()
 	stmt, err := botStorage.mainDB.Prepare("INSERT INTO admin_answers (answer_chat_id, answer_message_id) VALUES (?, ?)")
@@ -99,11 +99,8 @@ func InsertAnswerMessage(answer_chat_id int64, answer_message_id int) error {
 	defer stmt.Close()
 
 	_, err = stmt.Exec(answer_chat_id, answer_message_id)
-	if err != nil {
-		panic(err)
-	}
 
-	return nil
+	return err
 }
 
 // Returns all answer messages(chatID, messageID)
@@ -141,4 +138,9 @@ func DeleteAllAnswerMessages() error {
 	_, err := botStorage.mainDB.Exec("DELETE FROM admin_answers")
 
 	return err
+}
+
+// Add news message in database
+func AddNewsMessage(chatID int64, messageID int) {
+
 }

@@ -28,3 +28,13 @@ func sendBotStorageError(chatID int64, bot *tgbotapi.BotAPI) {
 
 	bot.Send(errorMessage)
 }
+
+func sendNewUserError(chatID int64, bot *tgbotapi.BotAPI) {
+	errorMessage := tgbotapi.NewMessage(
+		chatID,
+		"Помилка!\n\nВибачте, але я не можу зберегти дані про вас, оскільки не маю доступу до сховища даних. Для вирішення цієї проблеми, будь ласка, зверніться до адміністраторів за допомогою команди /contacts і повідомте їм про дану помилку."+
+			"Error!\n\nI'm sorry, but I cannot save your data as I don't have access to the storage. To resolve this issue, please contact the administrators using the command /contacts and inform them about this error.",
+	)
+
+	bot.Send(errorMessage)
+}
