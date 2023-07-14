@@ -10,12 +10,13 @@ CREATE TABLE IF NOT EXISTS news_types (
 -- News table
 CREATE TABLE IF NOT EXISTS news (
   news_id INT AUTO_INCREMENT PRIMARY KEY,
-  news_type INT NOT NULL,
+  news_type_id INT NOT NULL,
   news_chat_id BIGINT NOT NULL,
   news_message_id INT NOT NULL,
-  publication_date DATETIME NOT NULL,
+  state ENUM('unhidden', 'hidden'),
+  publication_date DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_news_types
-    FOREIGN KEY (news_type)
+    FOREIGN KEY (news_type_id)
     REFERENCES news_types(news_type_id)
     ON DELETE CASCADE
 );

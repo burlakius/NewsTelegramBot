@@ -1,34 +1,12 @@
 package mariadb
 
-// Returns admin chats ID slice from database
-func getAdminsChatsFromDB() []int64 {
-	rows, err := botStorage.mainDB.Query("SELECT chat_id FROM chat_admins")
-	if err != nil {
-		return []int64{}
-	}
-	defer rows.Close()
-
-	result := make([]int64, 0, 5)
-	var chat_id int64
-	for rows.Next() {
-		err = rows.Scan(&chat_id)
-		if err != nil {
-			panic(err)
-		}
-
-		result = append(result, chat_id)
-	}
-
-	return result
-}
-
 // Returns admin chats ID from bot storage
 func GetAdminsChats() []int64 {
 	return botStorage.adminsChats
 }
 
 // Add new chatID in database and bot storage
-func AddNewAdminChat(chat_id int64) error {
+func AddNewAdminChat(chatID int64) error {
 	botStorage.mu.Lock()
 	defer botStorage.mu.Unlock()
 	stmt, err := botStorage.mainDB.Prepare("INSERT INTO chat_admins (chat_id) VALUES (?)")
@@ -37,9 +15,9 @@ func AddNewAdminChat(chat_id int64) error {
 	}
 	defer stmt.Close()
 
-	_, err = stmt.Exec(chat_id)
+	_, err = stmt.Exec(chatID)
 
-	botStorage.adminsChats = append(botStorage.adminsChats, chat_id)
+	botStorage.adminsChats = append(botStorage.adminsChats, chatID)
 
 	return err
 }
@@ -53,15 +31,6 @@ func IsAdminChat(chatID int64) bool {
 	}
 
 	return false
-}
-
-type Question struct {
-	UserID    int64
-	FirstName string
-	LastName  string
-	Username  string
-	ChatID    int64
-	MessageID int
 }
 
 // Returns first question as Question struct from database
@@ -141,6 +110,97 @@ func DeleteAllAnswerMessages() error {
 }
 
 // Add news message in database
-func AddNewsMessage(chatID int64, messageID int) {
+func AddNewsMessage(chatID int64, messageID int, newsType string) error {
+	botStorage.mu.Lock()
+	defer botStorage.mu.Unlock()
+	stmt, err := botStorage.mainDB.Prepare("INSERT INTO news(news_type_id, news_chat_id, news_message_id, state) VALUES(?, ?, ?, 'hidden')")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
 
+	_, err = stmt.Exec(botStorage.newsTypes[newsType], chatID, messageID)
+
+	return err
+}
+
+// Returns slice of news and error from database
+func GetAllHiddenNews(newsType string) ([]News, error) {
+	result := make([]News, 0)
+
+	rows, err := botStorage.mainDB.Query("SELECT news_type_id, news_chat_id, news_message_id FROM news WHERE state = 'hidden' and news_type_id = ?", botStorage.newsTypes[newsType])
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		chatID     int64
+		messageID  int
+		newsTypeID int
+	)
+	for rows.Next() {
+		err := rows.Scan(&newsTypeID, &chatID, &messageID)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(
+			result,
+			News{
+				ChatID:    chatID,
+				MessageID: messageID,
+			},
+		)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// Returns users id slice with specific news type
+func GetTargetUsers(newsType string) ([]int64, error) {
+	result := make([]int64, 0)
+
+	rows, err := botStorage.mainDB.Query("SELECT user_id FROM users WHERE news_type_id = ?", botStorage.newsTypes[newsType])
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var chatID int64
+	for rows.Next() {
+		err := rows.Scan(&chatID)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, chatID)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// Change news state 'hidden' to 'unhidden'
+func UnhideNews() error {
+	botStorage.mu.Lock()
+	defer botStorage.mu.Unlock()
+
+	_, err := botStorage.mainDB.Exec("UPDATE news SET state = 'unhidden' WHERE state = 'hidden'")
+
+	return err
+}
+
+// Delete news message from database
+func DeleteNewsMessage(chatID int64, messageID int) error {
+	_, err := botStorage.mainDB.Exec("DELETE FROM news WHERE news_chat_id = ? and news_message_id = ?", chatID, messageID)
+
+	return err
 }

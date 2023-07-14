@@ -16,7 +16,7 @@ func startHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 
 	if message.Chat.IsPrivate() {
 		err := mariadb.AddNewUser(
-			message.From.ID,
+			message.Chat.ID,
 			message.From.FirstName,
 			message.From.LastName,
 			message.From.UserName,

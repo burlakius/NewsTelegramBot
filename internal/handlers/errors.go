@@ -19,6 +19,16 @@ func sendLanguageError(chatID int64, bot *tgbotapi.BotAPI) {
 	bot.Send(errorMessage)
 }
 
+func sendChatStateError(chatID int64, bot *tgbotapi.BotAPI) {
+	errorMessage := tgbotapi.NewMessage(
+		chatID,
+		"Помилка!\n\nВибачте, але я не можу виконати цю операцію, оскільки не маю доступу до сховища сессій. Для вирішення цієї проблеми, будь ласка, зверніться до адміністраторів за допомогою команди /contacts і повідомте їм про дану помилку.\n\n\n"+
+			"Error!\n\nI'm sorry, but I cannot perform this operation as I don't have access to the sessions storage. To resolve this issue, please contact the administrators using the command /contacts and inform them about this error.",
+	)
+
+	bot.Send(errorMessage)
+}
+
 func sendBotStorageError(chatID int64, bot *tgbotapi.BotAPI) {
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
