@@ -13,8 +13,8 @@ func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 	err := redisdb.SetLanguage(callbackQuery.Message.Chat.ID, language)
 
 	responceTest := map[string]string{
-		"uk-UA": "Мова 🇺🇦 налаштована!",
-		"en-US": "The language 🇺🇸 is set up!",
+		"uk-UA": "Мова 🇺🇦 налаштована!\n\nНатисніть /start, щоб впровадити зміни",
+		"en-US": "The language 🇺🇸 is set up!\n\nPress /start to implement changes",
 	}
 	message := tgbotapi.NewMessage(callbackQuery.Message.Chat.ID, "")
 	if err == nil {
@@ -25,7 +25,6 @@ func receiveLanguage(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI
 
 	}
 	bot.Send(message)
-	startHandler(callbackQuery.Message, bot)
 }
 
 func sendLanguageSwitcher(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {

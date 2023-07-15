@@ -124,23 +124,22 @@ func AddNewsMessage(chatID int64, messageID int, newsType string) error {
 	return err
 }
 
-// Returns slice of news and error from database
-func GetAllHiddenNews(newsType string) ([]News, error) {
+// Returns slice of important hidden news from database
+func GetAllImportantHiddenNews() ([]News, error) {
 	result := make([]News, 0)
 
-	rows, err := botStorage.mainDB.Query("SELECT news_type_id, news_chat_id, news_message_id FROM news WHERE state = 'hidden' and news_type_id = ?", botStorage.newsTypes[newsType])
+	rows, err := botStorage.mainDB.Query("SELECT news_chat_id, news_message_id FROM news WHERE state LIKE 'hidden' and news_type_id = (SELECT news_type_id FROM news_types WHERE name LIKE 'important')")
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
 	var (
-		chatID     int64
-		messageID  int
-		newsTypeID int
+		chatID    int64
+		messageID int
 	)
 	for rows.Next() {
-		err := rows.Scan(&newsTypeID, &chatID, &messageID)
+		err := rows.Scan(&chatID, &messageID)
 		if err != nil {
 			return nil, err
 		}
@@ -161,11 +160,11 @@ func GetAllHiddenNews(newsType string) ([]News, error) {
 	return result, nil
 }
 
-// Returns users id slice with specific news type
-func GetTargetUsers(newsType string) ([]int64, error) {
+// Returns users id slice from database
+func GetUsers() ([]int64, error) {
 	result := make([]int64, 0)
 
-	rows, err := botStorage.mainDB.Query("SELECT user_id FROM users WHERE news_type_id = ?", botStorage.newsTypes[newsType])
+	rows, err := botStorage.mainDB.Query("SELECT user_id FROM users")
 	if err != nil {
 		return nil, err
 	}

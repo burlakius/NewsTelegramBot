@@ -13,8 +13,10 @@ type botDB struct {
 }
 
 type News struct {
-	ChatID    int64
-	MessageID int
+	NewsID          int
+	ChatID          int64
+	MessageID       int
+	PublicationDate string
 }
 
 type Question struct {

@@ -45,6 +45,19 @@ func CallbackDataFilter(data ...string) func(*tgbotapi.CallbackQuery) bool {
 	}
 }
 
+func CallbackDataStartWithFilter(data ...string) func(*tgbotapi.CallbackQuery) bool {
+	return func(callbackQuery *tgbotapi.CallbackQuery) bool {
+		dataLength := len(data)
+		for _, d := range data {
+			if callbackQuery.Data[0:dataLength] == d {
+				return true
+			}
+		}
+
+		return false
+	}
+}
+
 func StateFilter(states ...string) func(*tgbotapi.Message) bool {
 	return func(message *tgbotapi.Message) bool {
 		chatState, err := redisdb.GetChatState(message.Chat.ID)

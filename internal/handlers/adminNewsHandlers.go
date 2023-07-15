@@ -134,21 +134,18 @@ func doneAddingNews(callbackQuery *tgbotapi.CallbackQuery, bot *tgbotapi.BotAPI)
 	)
 	bot.Send(editedMessage)
 
-	switch chatState {
-	case "WaitNews":
-		sendNews(callbackQuery.Message.Chat.ID, "regular", printer, bot)
-	case "WaitImportantNews":
-		sendNews(callbackQuery.Message.Chat.ID, "important", printer, bot)
+	if chatState == "WaitImportantNews" {
+		sendImportantNews(callbackQuery.Message.Chat.ID, printer, bot)
 	}
 }
 
-func sendNews(adminChatID int64, newsType string, printer *message.Printer, bot *tgbotapi.BotAPI) {
-	newsList, err := mariadb.GetAllHiddenNews(newsType)
+func sendImportantNews(adminChatID int64, printer *message.Printer, bot *tgbotapi.BotAPI) {
+	newsList, err := mariadb.GetAllImportantHiddenNews()
 	if err != nil {
 		sendBotStorageError(adminChatID, bot)
 		return
 	}
-	targetUsers, err := mariadb.GetTargetUsers(newsType)
+	targetUsers, err := mariadb.GetUsers()
 	if err != nil {
 		sendBotStorageError(adminChatID, bot)
 		return
@@ -167,6 +164,6 @@ func sendNews(adminChatID int64, newsType string, printer *message.Printer, bot 
 		return
 	}
 
-	responceMessage := tgbotapi.NewMessage(adminChatID, printer.Sprintf("Новини надіслані 🥳"))
+	responceMessage := tgbotapi.NewMessage(adminChatID, printer.Sprintf("Важливі новини надіслані 🥳"))
 	bot.Send(responceMessage)
 }

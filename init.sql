@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS users (
   first_name VARCHAR(64) NOT NULL,
   last_name VARCHAR(64) NOT NULL,
   username VARCHAR(32) NOT NULL,
+  last_news_id INT DEFAULT 0,
   CONSTRAINT fk_users_news_types
     FOREIGN KEY (news_type_id)
     REFERENCES news_types(news_type_id)

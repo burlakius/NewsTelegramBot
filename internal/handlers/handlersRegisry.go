@@ -11,6 +11,7 @@ func RegisterAllHandlers(dp *dispatcher.Dispatcher) {
 	// 	Common handlers
 	dp.RegisterMessageHandler(startHandler, filters.CommandFilter("start"))
 	dp.RegisterMessageHandler(sendLanguageSwitcher, filters.CommandFilter("language"))
+	dp.RegisterMessageHandler(sendLanguageSwitcher, filters.MessageTextFilter(translator.GetAllTranslations("Змінити мову [🇺🇦|🇬🇧]")...))
 	dp.RegisterMessageHandler(sendContacts, filters.CommandFilter("contacts"))
 
 	//	Admins handlers
@@ -24,6 +25,7 @@ func RegisterAllHandlers(dp *dispatcher.Dispatcher) {
 	//	Users handlers
 	dp.RegisterMessageHandler(userQuestionHandler, filters.MessageTextFilter(translator.GetAllTranslations("Задати питання ❓")...))
 	dp.RegisterMessageHandler(receiveQuetionMessage, filters.StateFilter("WaitQuestion"))
+	dp.RegisterMessageHandler(getNews, filters.MessageTextFilter(translator.GetAllTranslations("Новини 📰")...))
 
 	// Edited message handlers
 

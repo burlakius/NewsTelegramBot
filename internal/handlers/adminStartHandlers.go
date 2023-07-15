@@ -34,11 +34,11 @@ func setAdminsCommands(chatID int64, printer *message.Printer, bot *tgbotapi.Bot
 			Description: printer.Sprintf("Вивести питання користувачів з можливістю відповіді"),
 		},
 		tgbotapi.BotCommand{
-			Command:     "add_news",
+			Command:     "set_news",
 			Description: printer.Sprintf("Додати нову звичайну новину"),
 		},
 		tgbotapi.BotCommand{
-			Command:     "add_important_news",
+			Command:     "set_important_news",
 			Description: printer.Sprintf("Додати нову важливу новину"),
 		},
 		tgbotapi.BotCommand{

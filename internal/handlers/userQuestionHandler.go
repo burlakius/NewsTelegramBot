@@ -24,10 +24,10 @@ func userQuestionHandler(message *tgbotapi.Message, bot *tgbotapi.BotAPI) {
 	responceMessage := tgbotapi.NewMessage(message.Chat.ID, printer.Sprintf("Очікую на ваше питання\n\nУВАГА! Всі наступні повідомлення будуть враховуватись, як питання і будуть надісланні адміністраторам"))
 	responceMessage.ReplyMarkup = tgbotapi.NewInlineKeyboardMarkup(
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(printer.Sprint("Надіслати питання ✉️"), "SendQuestions"),
+			tgbotapi.NewInlineKeyboardButtonData(printer.Sprintf("Надіслати питання ✉️"), "SendQuestions"),
 		),
 		tgbotapi.NewInlineKeyboardRow(
-			tgbotapi.NewInlineKeyboardButtonData(printer.Sprint("Відмінити ❌"), "cancel"),
+			tgbotapi.NewInlineKeyboardButtonData(printer.Sprintf("Відмінити ❌"), "cancel"),
 		),
 	)
 
