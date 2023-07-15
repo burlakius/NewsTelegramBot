@@ -2,15 +2,18 @@ package handlers
 
 import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"news_telegram_bot/pkg/databases/redis"
 )
 
 func sendError(chatID int64, bot *tgbotapi.BotAPI, errorText string) {
+	redisdb.DoneChatState(chatID)
 	message := tgbotapi.NewMessage(chatID, errorText)
 
 	bot.Send(message)
 }
 
 func sendLanguageError(chatID int64, bot *tgbotapi.BotAPI) {
+	redisdb.DoneChatState(chatID)
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
 		"Помилка!\n\nВибачте, але я не можу зрозуміти, якою мовою відповідати вам. Для вирішення цієї проблеми, будь ласка, спробуйте налаштувати мову, використовуючи команду /language. Якщо це не спрацювало, спробуйте ще раз, або зв'яжіться з адміністраторами для отримання допомоги за допомогою команди /contacts.\n\n\n"+
@@ -20,6 +23,7 @@ func sendLanguageError(chatID int64, bot *tgbotapi.BotAPI) {
 }
 
 func sendChatStateError(chatID int64, bot *tgbotapi.BotAPI) {
+	redisdb.DoneChatState(chatID)
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
 		"Помилка!\n\nВибачте, але я не можу виконати цю операцію, оскільки не маю доступу до сховища сессій. Для вирішення цієї проблеми, будь ласка, зверніться до адміністраторів за допомогою команди /contacts і повідомте їм про дану помилку.\n\n\n"+
@@ -30,6 +34,7 @@ func sendChatStateError(chatID int64, bot *tgbotapi.BotAPI) {
 }
 
 func sendBotStorageError(chatID int64, bot *tgbotapi.BotAPI) {
+	redisdb.DoneChatState(chatID)
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
 		"Помилка!\n\nВибачте, але я не можу виконати цю операцію, оскільки не маю доступу до сховища даних. Для вирішення цієї проблеми, будь ласка, зверніться до адміністраторів за допомогою команди /contacts і повідомте їм про дану помилку.\n\n\n"+
@@ -40,6 +45,7 @@ func sendBotStorageError(chatID int64, bot *tgbotapi.BotAPI) {
 }
 
 func sendNewUserError(chatID int64, bot *tgbotapi.BotAPI) {
+	redisdb.DoneChatState(chatID)
 	errorMessage := tgbotapi.NewMessage(
 		chatID,
 		"Помилка!\n\nВибачте, але я не можу зберегти дані про вас, оскільки не маю доступу до сховища даних. Для вирішення цієї проблеми, будь ласка, зверніться до адміністраторів за допомогою команди /contacts і повідомте їм про дану помилку."+
