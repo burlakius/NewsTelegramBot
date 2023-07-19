@@ -12,7 +12,7 @@ func setMenu(chatID int64, printer *message.Printer, bot *tgbotapi.BotAPI) {
 			tgbotapi.NewKeyboardButton(printer.Sprintf("Новини 📰")),
 		),
 		tgbotapi.NewKeyboardButtonRow(
-			tgbotapi.NewKeyboardButton(printer.Sprintf("Задати питання ❓")),
+			tgbotapi.NewKeyboardButton(printer.Sprintf("Поставити питання ❓")),
 		),
 		tgbotapi.NewKeyboardButtonRow(
 			tgbotapi.NewKeyboardButton(printer.Sprintf("Змінити мову [🇺🇦|🇬🇧]")),
