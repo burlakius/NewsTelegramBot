@@ -2,12 +2,19 @@ version: '3.8'
 
 
 services:
-  # app:
-  #   build: ./docker/go/
-  #
-  #   command: ./tmp/bin/tgbot
-  #
-  redis-language-sessions:
+  telegram-bot:
+    container_name: telegram-bot
+    build:
+      context: .
+      dockerfile: Dockerfile
+      network: default
+    depends_on:
+      - tgbot-main-db
+      - tgbot-lang-sessions
+      - tgbot-chat-states
+
+  tgbot-lang-sessions:
+    container_name: tgbot-lang-sessions
     image: redis:7-alpine
     restart: on-failure
     command: redis-server /usr/local/etc/redis/redis.conf
@@ -15,20 +22,26 @@ services:
       - 6379:6379
     volumes:
       - ./docker/redis/redis_lang_sessions.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - default
 
-  redis-chat-states:
+  tgbot-chat-states:
+    container_name: tgbot-chat-states
     image: redis:7-alpine
     restart: on-failure
     command: redis-server /usr/local/etc/redis/redis.conf
     ports:
-      - 6378:6379
+      - "6378:6379"
     volumes:
       - ./docker/redis/redis_chat_states.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - default
 
-  tgbot-mariadb:
+  tgbot-main-db:
+    container_name: tgbot-main-db
     image: mariadb:latest
     ports:
-      - 3306:3306
+      - "3306:3306"
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
       MARIADB_DATABASE: ${MARIADB_DATABASE}
@@ -37,3 +50,9 @@ services:
     volumes:
       - ./docker/mariadb/db:/var/lib/mysql
       - ./docker/mariadb/init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - default
+
+networks:
+  default: 
+    driver: bridge

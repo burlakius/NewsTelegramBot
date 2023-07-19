@@ -16,6 +16,10 @@ func MariadbConnect(user, password, host, dbname string) error {
 		fmt.Sprintf("%s:%s@tcp(%s)/%s", user, password, host, dbname),
 	)
 
+	if err != nil {
+		panic(err)
+	}
+
 	botStorage = &botDB{
 		mainDB: connetion,
 		mu:     sync.Mutex{},

@@ -1,0 +1,15 @@
+.git/
+.gitignore
+
+tmp/
+
+docker/
+docker-compose.yml
+Dockerfile
+
+init.sql
+makefile
+README.md
+save-translations.sh
+update_sql_initfile.sh
+

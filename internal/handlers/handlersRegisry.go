@@ -23,7 +23,7 @@ func RegisterAllHandlers(dp *dispatcher.Dispatcher) {
 	dp.RegisterMessageHandler(receiveNewsMessage, filters.StateFilter("WaitNews", "WaitImportantNews"))
 
 	//	Users handlers
-	dp.RegisterMessageHandler(userQuestionHandler, filters.MessageTextFilter(translator.GetAllTranslations("Задати питання ❓")...))
+	dp.RegisterMessageHandler(userQuestionHandler, filters.MessageTextFilter(translator.GetAllTranslations("Поставити питання ❓")...))
 	dp.RegisterMessageHandler(receiveQuetionMessage, filters.StateFilter("WaitQuestion"))
 	dp.RegisterMessageHandler(getNews, filters.MessageTextFilter(translator.GetAllTranslations("Новини 📰")...))
 

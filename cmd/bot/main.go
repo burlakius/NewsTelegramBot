@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "news_telegram_bot/internal/translations"
 	"news_telegram_bot/pkg/translator"
@@ -19,6 +20,8 @@ import (
 )
 
 func init() {
+	time.Sleep(10 * time.Second)
+
 	config.LoadConfig()
 
 	logging.LoggerSetup(config.LogPath, config.LogLevel)
