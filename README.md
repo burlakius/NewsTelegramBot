@@ -1,28 +1,40 @@
 ### Features
 
-- Posting and reading the news
-- Communication between users and admins by asking questions
-- Multilingual interface(currently ukr and eng)
+- **News Management:** Easily post and read news updates within the system.
+- **User-Admin Communication:** Seamless interaction between users and admins through a question-asking feature.
+- **Multilingual Interface:** Currently supports Ukrainian (ukr) and English (eng) languages.
 
-## Requirements
-####For deployment
-- docker
-- docker-compose
+### Requirements
 
-####For editing
-- Golang compiler and tools:
-	- golang.org/x/text/cmd/gotext
+#### For Deployment
 
-- Redis
-- Mariadb
-- Make(optional)
+- Docker
+- Docker-compose
+
+#### For Editing
+
+- **Golang Compiler and Tools:**
+  - golang.org/x/text/cmd/gotext
+
+- **Database and Caching:**
+  - Redis
+  - MariaDB
+
+- **Optional:**
+  - Make (for convenience)
 
 ### How does the bot work?
-The bot makes a request for updates every interval (15 ms by default).
 
-Routing of updates is handled by Router. It receives and sends updates to Dispatchers one by one (currently 4 of them are created and each is running in a separate goroutine).
+The bot operates on a scheduled interval (15 ms by default) for requesting updates.
 
-Dispatcher processes updates by main type (message, callbackQuery, etc.). At the moment we have implemented processing of messages, edited messages and callbackQueries. When it matches the desired type, the dispatcher passes the content of the update to Handlers.
+#### Update Routing
 
-Handler has a list of filters in it and a callback function that is called when the update matches the filters.
+- **Router:** Manages the routing of updates. It receives and sequentially sends updates to Dispatchers. Currently, four Dispatchers are created, each running in a separate goroutine.
 
+#### Update Processing
+
+- **Dispatcher:** Processes updates based on their main type (message, callbackQuery, etc.). Implemented handling for messages, edited messages, and callbackQueries. Upon matching the desired type, the dispatcher forwards the update content to Handlers.
+
+#### Handling Updates
+
+- **Handler:** Contains a list of filters and a callback function. The callback function is invoked when the update matches the specified filters. This allows for flexible and customizable handling of different types of updates.
